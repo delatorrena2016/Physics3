@@ -1,11 +1,11 @@
 import matplotlib.pyplot as plt
 import math as mt
 import numpy as np
-from matplotlib import animation
+#from matplotlib import animation
 
 
 #To plot
-def Plot(time, theta_caos, theta_lin, x, y):
+def Plot(time, theta_caos, theta_lin, x, y, ang_dot):
     plt.figure()
 
     plt.subplot(211)
@@ -17,6 +17,10 @@ def Plot(time, theta_caos, theta_lin, x, y):
     plt.legend(['Non_linear','Linear'], loc = 'lower right')
 
     plt.subplot(212)
+    plt.plot(theta_caos, ang_dot)
+    plt.title('Phase space')
+
+    plt.subplot(213)
     plt.plot(x, y)
     plt.xlabel('X [m]')
     plt.ylabel('Y [m]')
@@ -63,28 +67,34 @@ while count*dif_t <= T:
     theta_lin.append(theta_l)
     time.append(t)
 
+ang_dot = np.diff(theta_caos)/np.diff(time)
+la = len(theta_caos)
+lo = len(time)
+print(la, lo)
 #Setting animation figure
-fig = plt.figure()
-ax = fig.add_subplot(111, aspect='equal', autoscale_on=False,
-                     xlim=(-2, 2), ylim=(-2, 2))
-ax.grid()
-line, = ax.plot([], [], lw=2)
-time_text = ax.text(0.02, 0.95, '', transform=ax.transAxes)
+
+#fig = plt.figure()
+#ax = fig.add_subplot(111, aspect='equal', autoscale_on=False,
+#                     xlim=(-2, 2), ylim=(-2, 2))
+#ax.grid()
+#line, = ax.plot([], [], lw=2)
+#time_text = ax.text(0.02, 0.95, '', transform=ax.transAxes)
 #Initialize animation
-def init():
-    line.set_data([], [])
-    time_text.set_text('')
-    return line, time_text
+#def init():
+#    line.set_data([], [])
+#    time_text.set_text('')
+#    return line, time_text
 
-def animate(i):
-    global t, ang_init, ang_f, dif_t
-    t += dif_t # Ever changing Domain of time
-    theta_l= ang_init*mt.cos(ang_f*(t-dif_t*i))
-    line.set_data(t, theta_l)
-    time_text.set_text('time = %.1f' % t)
-    return line, time_text
+#def animate(i):
+#    global t, ang_init, ang_f, dif_t
+#    t += dif_t # Ever changing Domain of time
+#    theta_l= ang_init*mt.cos(ang_f*(t-dif_t*i))
+#    line.set_data(t, theta_l)
+#    time_text.set_text('time = %.1f' % t)
+#    return line, time_text
 
-anim = animation.FuncAnimation(fig, animate, init_func=init,
-                               frames=100, interval=20, blit=True)
-plt.show()
-#Plot(time, theta_caos, theta_lin, x, y)
+#anim = animation.FuncAnimation(fig, animate, init_func=init,
+#                               frames=100, interval=20, blit=True)
+#plt.show()
+
+Plot(time, theta_caos, theta_lin, x, y, ang_dot)
