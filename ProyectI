@@ -1,0 +1,175 @@
+#include <iostream>
+  #include <fstream>                                                            //provides stream ext data
+  #include <string>
+  #include <sstream>
+  #include <vector>
+  #include <iterator>
+  #include <algorithm>
+  #include <bits/stdc++.h>                                                    //provides offline data formatting (code re-use)
+
+
+using namespace std;
+
+vector<string> tokenizer(string line, char del);
+vector<string> tokens;
+
+class Coordenada {
+    private:
+        float m_x = 0;
+        float m_y = 0;
+
+    public:
+        Coordenada(float _x, float _y){
+          m_x = _x;
+          m_y = _y;
+        }
+
+        float getX() {return m_x;}
+        float getY() {return m_y;}
+        //void print(){cout<<m_y<<"si llegan los datos a coordenada"<<endl; }  ***
+};
+
+class FiguraPlana {
+protected:
+    vector<Coordenada> m_coods;
+
+public:
+  void mostrarDatos(vector<Coordenada> m_coods){
+    //cout << "\nllego hasta base" << endl; ***
+    ofstream fout;
+    fout.open("NewCoods.txt",fstream::app);
+    for(unsigned int i = 0; i < m_coods.size(); i++)
+    fout <<  m_coods[i].getX() << "," << m_coods[i].getY() << endl;
+    fout.close();
+    m_coods.clear();
+  }
+};
+
+class Triangle : public FiguraPlana {
+public:
+  Triangle(Coordenada coordinate){ m_coods.push_back(coordinate); }
+  Triangle() = default;
+  void mostrarDatos(){ FiguraPlana::mostrarDatos(m_coods); }
+};
+
+class Circle : public FiguraPlana {
+private:
+    float m_radio = 0;
+public:
+  Circle(float radio, Coordenada coordinate){
+     m_radio = radio;
+     m_coods.push_back(coordinate);
+   }
+
+
+  void mostrarDatos(){
+    ofstream fout;
+    fout.open("NewCoods.txt",fstream::app);
+    fout << "su radio es: " << m_radio << endl;
+    fout.close();
+    FiguraPlana::mostrarDatos(m_coods);
+  }
+  /*void print(){
+    cout<<m_radio<<"si llegan los datos a circulo"<<endl;
+    cout << m_coods[0].getX() << endl;
+    cout << m_coods[0].getY() << endl;
+  }*/ //***
+
+};
+
+class Rectangle : public FiguraPlana {
+public:
+  Rectangle(Coordenada coordinate){ m_coods.push_back(coordinate); }
+  Rectangle() = default;
+  void mostrarDatos(){ FiguraPlana::mostrarDatos(m_coods); }
+};
+
+int main() {
+
+ifstream fin("Coods.txt");
+
+/*  if (!fin.is_open()){cout << "Can't open file" << endl;                                   //method returns boolean of association of stream with a file
+    return 0; }*/
+vector<string> eachObject;
+string line;
+
+while(getline(fin, line)){
+  eachObject.push_back(line);
+}
+  fin.close();
+
+
+for (unsigned int i = 0; i < eachObject.size(); i++){
+
+  vector<string>FiguraTemp = tokenizer(eachObject.at(i), ',');
+  for (unsigned int i = 0; i < FiguraTemp.size(); i++){cout << FiguraTemp.at(i);}
+  char cstr[1];
+
+  strcpy( cstr, FiguraTemp.at(0).c_str());
+
+  switch (cstr[0]) {
+    case 'T': {
+      //cout << "\nentro a switch T" << endl;
+      ofstream fout;
+      fout.open("NewCoods.txt",fstream::app);
+      fout << "Pares ordenados de triangulo: " << endl;
+      fout.close();
+
+      for (unsigned int j = 0; j < 3; j++){
+        Coordenada coordTemp = Coordenada(stof(FiguraTemp.at(2*j+1)), stof(FiguraTemp.at(2*j+2)));
+
+        Triangle coord = Triangle(coordTemp);
+
+        coord.mostrarDatos();
+      }
+
+      break;}
+    case 'C': {
+      ofstream fout;
+      fout.open("NewCoods.txt",fstream::app);
+      fout << "Pares ordenados de circulo: " << endl;
+      fout.close();
+        //cout << "\nentro a switch C" << endl;
+        Coordenada coordTemp = Coordenada(stof(FiguraTemp.at(1)), stof(FiguraTemp.at(2)));
+        Circle coord = Circle(stof(FiguraTemp.at(3)), coordTemp);
+
+        coord.mostrarDatos();
+
+        //coordTemp.print(); ***
+        //coord.print(); ***
+
+
+      break;}
+    case 'R': {
+      ofstream fout;
+      fout.open("NewCoods.txt",fstream::app);
+      fout << "Pares ordenados de rectangulo: " << endl;
+      fout.close();
+      //cout << "\nentro a switch R" << endl; ***
+      for (unsigned int j = 0; j < 4; j++){
+        Coordenada coordTemp = Coordenada(stof(FiguraTemp.at(2*j+1)),stof(FiguraTemp.at(2*j+2)));
+        Rectangle coord = Rectangle(coordTemp);
+        coord.mostrarDatos();
+      }
+
+
+      break;}
+    default:
+      break;
+ }
+}
+
+    return 0;
+}
+
+vector<string> tokenizer(string line,char del){
+  vector<string> tokens;
+  stringstream ss(line);
+  string intermediate;
+
+  while(getline(ss, intermediate, del))
+  {
+    tokens.push_back(intermediate);
+  }
+  return tokens;
+}
